@@ -8,9 +8,6 @@
 #import "MVFileUploader.h"
 #import "EMKeychainItem.h"
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////
 @interface MVFileUploader ()
 
 @property (retain) MVFileUpload *fileUpload;
@@ -23,9 +20,6 @@
 
 @end
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////
 @implementation MVFileUploader
 
 @synthesize delegate        = delegate_,
@@ -35,12 +29,9 @@
             deleteFile			= deleteFile_,
             tries           = tries_;
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
 #pragma mark Memory Management
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)dealloc {
 	[fileUpload_ release];
 	[filename_ release];
@@ -49,7 +40,6 @@
 	[super dealloc];
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 - (id)init {
 	self = [super init];
 	if(self) {
@@ -62,12 +52,9 @@
 	return self;
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
 #pragma mark Private Methods
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)deleteFile:(NSURL*)fileURL
 {
 	if(!self.deleteFile)
@@ -76,12 +63,9 @@
                                             error:nil];
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
 #pragma mark Public Methods
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)uploadFile:(NSString*)filepath
         toFilename:(NSString*)filename
         deleteFile:(BOOL)deleteFile
@@ -147,12 +131,9 @@
 		[self.fileUpload start];
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
 #pragma mark MVFileUploadDelegate methods
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)fileUpload:(MVFileUpload*)fileUpload
   didFailWithError:(NSString*)error
 {
@@ -171,46 +152,43 @@
 	}
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)fileUploadDidStartUpload:(MVFileUpload *)fileUpload
 {
 	if([self.delegate respondsToSelector:@selector(fileUploaderDidStart:)])
 		[self.delegate fileUploaderDidStart:self];
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)fileUploadDidSuccess:(MVFileUpload*)fileUpload
 {
 	[self deleteFile:fileUpload.source];
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 	NSString *baseurl = [defaults stringForKey:@"baseurl"];
-	if(![[baseurl substringFromIndex:[baseurl length] - 1] isEqualToString:@"/"])
+	if( ![[baseurl substringFromIndex:[baseurl length] - 1] isEqualToString:@"/"])
 		baseurl = [NSString stringWithFormat:@"%@/",baseurl];
-  if([baseurl length] < 7 ||
-     (![[[baseurl substringToIndex:7] lowercaseString] isEqualToString:@"http://"]
-      && ![[[baseurl substringToIndex:8] lowercaseString] isEqualToString:@"https://"]))
-    baseurl = [NSString stringWithFormat:@"http://%@",baseurl];
+	if ( [baseurl length] < 7 ||
+	   ( ![[[baseurl substringToIndex:7] lowercaseString] isEqualToString:@"http://"]
+	  && ![[[baseurl substringToIndex:8] lowercaseString] isEqualToString:@"https://"]) )
+		baseurl = [NSString stringWithFormat:@"http://%@",baseurl];
 	
 	NSString *filename = [fileUpload.destination lastPathComponent];
 	
-	NSString *url = [NSString stringWithFormat:@"%@%@",baseurl,filename];
+	NSString *url = [NSString stringWithFormat:@"%@%@", baseurl, filename];
 	
-	if([self.delegate respondsToSelector:@selector(fileUploader:didSuccess:fileName:filePath:)])
+	if ( [self.delegate respondsToSelector:@selector(fileUploader:didSuccess:fileName:filePath:)] )
 		[self.delegate fileUploader:self
-                     didSuccess:url
-                       fileName:self.filename
-                       filePath:self.filepath];
+						 didSuccess:url
+						   fileName:self.filename
+						   filePath:self.filepath];
 	[self.fileUpload cancel];
 	self.fileUpload = nil;
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-- (void)fileUpload:(MVFileUpload *)fileUpload 
-didChangeProgression:(float)progression 
-         bytesRead:(long)bytesRead 
-        totalBytes:(long)totalBytes
+- (void)fileUpload:(MVFileUpload *)fileUpload
+didChangeProgression:(float)progression
+		   bytesRead:(long)bytesRead
+		  totalBytes:(long)totalBytes
 {
-	if([self.delegate respondsToSelector:@selector(fileUploader:didChangeProgression:)])
+	if ( [self.delegate respondsToSelector:@selector(fileUploader:didChangeProgression:)] )
 		[self.delegate fileUploader:self didChangeProgression:progression];
 }
 

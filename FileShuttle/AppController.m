@@ -9,9 +9,6 @@
 #import "MVDictionaryKeyCombo.h"
 #import "NSPasteboard+Files.h"
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////
 @interface AppController ()
 
 @property (retain) MVDockImage *dockImage;
@@ -45,9 +42,6 @@
 
 @end
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////
 @implementation AppController
 
 @synthesize dockImage                       = dockImage_,
@@ -67,7 +61,6 @@
             registeredClipboardShortcut     = registeredClipboardShortcut_,
             isRegisteredClipboardShortcut   = isRegisteredClipboardShortcut_;
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)dealloc
 {
 	[dockImage_ release];
@@ -86,27 +79,27 @@
 	[super dealloc];
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 - (id)init
 {
   self = [super init];
-  if (self) {
+  if ( self )
+  {
 		restoreDockIconTimer_ = nil;
 		
 		NSDictionary *defaultClipboardShortcutDic =
-    MVDictionaryFromKeyCombo(
-                             SRMakeKeyCombo(32 /* U */, NSCommandKeyMask | NSAlternateKeyMask));
+		MVDictionaryFromKeyCombo(SRMakeKeyCombo(32 /* U */, NSCommandKeyMask | NSAlternateKeyMask));
 		NSDictionary *defaultsPrefs = [NSDictionary dictionaryWithObjectsAndKeys:
                                    @"FTP", @"protocol",
                                    @"21", @"port",
-                                   @"YES",@"upload_screenshots",
-                                   @"YES",@"url_shortener",
-                                   @"NO",@"dock_icon",
-                                   @"YES",@"menubar_icon",
-                                   @"NO",@"launch_at_login",
-                                   @"YES",@"growl",
-                                   @"YES",@"clipboard_upload",
-                                   defaultClipboardShortcutDic,@"clipboard_upload_shortcut",
+                                   @"YES", @"upload_screenshots",
+                                   @"YES", @"url_shortener",
+								   @"http://sht.tl/api.php", @"url_shortener_url",
+                                   @"NO", @"dock_icon",
+                                   @"YES", @"menubar_icon",
+                                   @"NO", @"launch_at_login",
+                                   @"YES", @"growl",
+                                   @"YES", @"clipboard_upload",
+                                   defaultClipboardShortcutDic, @"clipboard_upload_shortcut",
                                    nil];
 		NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 		[defaults registerDefaults:defaultsPrefs];
@@ -203,7 +196,6 @@
   return self;
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)awakeFromNib
 {
 	[[NSNotificationCenter defaultCenter] addObserver:self
@@ -212,7 +204,6 @@
                                              object:nil];
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)observeValueForKeyPath:(NSString *)keyPath
                       ofObject:(id)object
                         change:(NSDictionary *)change
@@ -244,7 +235,6 @@
 	}
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
 	[NSApp setServicesProvider:self];
@@ -254,14 +244,12 @@
 		[self.preferencesWindow makeKeyAndOrderFront:self];
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)application:(NSApplication *)sender
           openFiles:(NSArray *)filenames
 {
 	[self uploadFiles:filenames];
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)doString:(NSPasteboard *)pboard
         userData:(NSString *)userData
            error:(NSString **)error
@@ -273,12 +261,9 @@
 	}
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
 #pragma mark MenuItem Methods
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)openPreferences
 {
 	[self.preferencesWindow makeKeyAndOrderFront:self];
@@ -286,18 +271,14 @@
 	SetFrontProcess(&psn);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)quit
 {
 	[NSApp terminate:self];
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
 #pragma mark Private Methods
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 - (BOOL)areConnectionSettingsFilled
 {
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -310,7 +291,6 @@
            || !username || [username length] == 0 || !baseurl || [baseurl length] == 0);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)uploadPNG:(NSData*)pngData
 {
 	NSString *path = @"/tmp/image.png";
@@ -319,7 +299,6 @@
          deleteFile:YES];
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)uploadString:(NSString*)string
 {
 	NSString *path = @"/tmp/snippet.txt";
@@ -328,14 +307,12 @@
          deleteFile:YES];
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)uploadFiles:(NSArray*)filenames
 {
 	[self uploadFiles:filenames
          deleteFile:NO];
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)uploadFiles:(NSArray*)filenames
          deleteFile:(BOOL)deleteFile
 {
@@ -391,7 +368,6 @@
                        deleteFile:deleteFile];
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)setDisplayStatusItem:(BOOL)flag
 {
 	if(flag) {
@@ -425,7 +401,6 @@
 	}
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)setRegisterClipboardShortcut:(BOOL)flag
                             keyCombo:(KeyCombo)keyCombo
 {
@@ -452,7 +427,6 @@
 	[hotKeyCenter release];
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)uploadClipboardFromShortcut:(NSEvent *)event
 {
 	NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
@@ -471,7 +445,6 @@
 	}
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)restoreDockIcon
 {
 	self.statusView.state = MVStatusItemStateNormal;
@@ -484,7 +457,6 @@
 	}
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)updateDockIcon
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
@@ -492,7 +464,6 @@
 	[pool release];
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)displayCompletedIcons
 {
 	self.statusView.state = MVStatusItemStateComplete;
@@ -512,7 +483,6 @@
                                                               repeats:NO];
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)copyURLFromMenuItem:(NSMenuItem*)menuItem
 {
 	NSString *url = menuItem.toolTip;
@@ -534,24 +504,18 @@
 	[self displayCompletedIcons];
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
 #pragma mark NSWindow Notification methods
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)windowDidUpdate:(NSNotification*)notification
 {
 	if(self.statusItem && self.statusItem.view.window)
 		[self.statusItem.view.window makeKeyAndOrderFront:self];
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
 #pragma mark DirectoryListenerDelegate methods
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)directoryListener:(MVDirectoryListener *)aDirectoryListener
                   newFile:(NSString *)filename
 {
@@ -559,12 +523,9 @@
 	[self uploadFiles:[NSArray arrayWithObject:filepath]];
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
 #pragma mark MVFileUploaderDelegate methods
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)fileUploader:(MVFileUploader *)fileUploader
     didFailWithError:(NSString *)error
 {
@@ -593,7 +554,6 @@
                                clickContext:nil];
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)fileUploaderDidStart:(MVFileUploader*)fileUploader
 {
 	self.statusView.state = MVStatusItemStateUploading;
@@ -607,7 +567,6 @@
 	}
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)fileUploader:(MVFileUploader*)fileUploader
 didChangeProgression:(float)progression
 {
@@ -623,7 +582,6 @@ didChangeProgression:(float)progression
 	}
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)fileUploader:(MVFileUploader*)fileUploader
           didSuccess:(NSString*)url
             fileName:(NSString*)filename
@@ -672,19 +630,15 @@ didChangeProgression:(float)progression
 	[self displayCompletedIcons];
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////
 #pragma mark -
 #pragma mark MVStatusItemViewDelegate Methods
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)statusItemView:(MVStatusItemView *)view 
           didDropFiles:(NSArray *)filenames
 {
 	[self uploadFiles:filenames];
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 - (void)statusItemView:(MVStatusItemView*)view
          didDropString:(NSString*)string
 {

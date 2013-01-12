@@ -7,7 +7,6 @@
 
 #import "MVDictionaryKeyCombo.h"
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 NSDictionary* MVDictionaryFromKeyCombo(KeyCombo keyCombo) 
 {
 	NSDictionary *values = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -17,7 +16,6 @@ NSDictionary* MVDictionaryFromKeyCombo(KeyCombo keyCombo)
 	return values;
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
 KeyCombo MVKeyComboFromDictionary(NSDictionary *dic)
 {
 	short keyCode = [[dic valueForKey:@"keyCode"] shortValue];
