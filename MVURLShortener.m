@@ -7,23 +7,24 @@
 
 #import "MVURLShortener.h"
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////
 @implementation MVURLShortener
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-- (NSString*)shortenURL:(NSString*)url {
+- (NSString*)shortenURL:(NSString*)url
+{
+	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 	NSString *shttleUrl = [NSString stringWithFormat:
-                         @"http://sht.tl/api.php?action=shorten&longUrl=%@",url];
+						   @"%@?action=shorten&longUrl=%@",
+						   [defaults stringForKey:@"url_shortener_url"],
+						   url];
 	NSString *doc = [NSString stringWithContentsOfURL:[NSURL URLWithString:shttleUrl]
-                                           encoding:NSUTF8StringEncoding error:nil];
-	if(doc == nil) return nil;
+											 encoding:NSUTF8StringEncoding error:nil];
+	if ( doc == nil ) return nil;
 	
 	NSString *shortenedUrl = nil;
 	BOOL matched = [doc getCapturesWithRegexAndReferences:@"\\<shortUrl\\>(.*)\\<\\/shortUrl\\>",
-                  @"${1}", &shortenedUrl, nil];
-	if(matched) return shortenedUrl;
+					@"${1}", &shortenedUrl, nil];
+	if ( matched ) return shortenedUrl;
+	
 	return nil;
 }
 
