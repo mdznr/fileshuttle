@@ -15,6 +15,8 @@
 	NSSecureTextField *passwordTextField_;
 	NSPopUpButton *showInPopUpButton_;
 	SRRecorderControl *clipboardRecorderControl_;
+	IBOutlet NSPanel *URLShortenerProtocolInfomationPanel;
+	IBOutlet NSTextField *URLShortenerProtocolText;
 }
 
 @property (assign) IBOutlet NSWindow *window;
@@ -29,5 +31,6 @@
 - (IBAction)protocolChanged:(id)sender;
 - (IBAction)passwordChanged:(id)sender;
 - (IBAction)showInPopUpButtonChanged:(id)sender;
+- (IBAction)showURLShortenerInfo:(id)sender;
 
 @end

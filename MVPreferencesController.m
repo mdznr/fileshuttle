@@ -82,11 +82,10 @@
 	[self setShowDockIconValue:[defaults boolForKey:@"dock_icon"]];
 	[self updateLaunchAtLoginFromValue];
 	
-	if([defaults boolForKey:@"dock_icon"]) {
+	if ( [defaults boolForKey:@"dock_icon"] ) {
 		if([defaults boolForKey:@"menubar_icon"]) {
 			[self.showInPopUpButton selectItemWithTag:2];
-		}
-		else {
+		} else {
 			[self.showInPopUpButton selectItemWithTag:1];
 		}
 	}
@@ -98,14 +97,16 @@
 	self.clipboardRecorderControl.canCaptureGlobalHotKeys = YES;
 	self.clipboardRecorderControl.delegate = self;
 	NSDictionary *dic = [defaults dictionaryForKey:@"clipboard_upload_shortcut"];
-	if(dic) {
+	if ( dic ) {
 		self.clipboardRecorderControl.keyCombo = MVKeyComboFromDictionary(dic);
 	}
   
-  [self.toolbar setSelectedItemIdentifier:kMVGeneralIdentifier];
-  self.selectedIdentifier = kMVGeneralIdentifier;
-  self.selectedView = nil;
-  [self layoutView:NO];
+	[self.toolbar setSelectedItemIdentifier:kMVGeneralIdentifier];
+	self.selectedIdentifier = kMVGeneralIdentifier;
+	self.selectedView = nil;
+	[self layoutView:NO];
+	
+	[URLShortenerProtocolText setStringValue:@"FileShuttle queries {custom shortener}?action=shorten&longUrl={URL to shorten}\nWhere {custom shortener} is the URL of the shortener specified and {URL to shorten} is the full URL of the upload.\nFileShuttle expects XML output like:\n<shttl>\n\t\t<errorCode>0</errorCode>\n\t<errorMessage></errorMessage>\n\t<results>\n\t\t<nodeKeyVal>\n\t\t\t<nodeKey><![CDATA[http://mdznr.com/tmp/Screen Shot 2012-09-02 at 1.43.02 AM-clCN8Pmebr.png]]></nodeKey>\n\t\t\t<shortUrl>http://sht.tl/sVcLE</shortUrl>\n\t\t</nodeKeyVal>\n\t</results>\n\t<statusCode>OK</statusCode>\n</shttl>"];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath
@@ -113,13 +114,10 @@
                         change:(NSDictionary *)change
                        context:(void *)context
 {
-	if([keyPath isEqualToString:@"dock_icon"])
-	{
+	if ( [keyPath isEqualToString:@"dock_icon"] ) {
 		NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 		[self setShowDockIconValue:[defaults boolForKey:@"dock_icon"]];
-	}
-	else if([keyPath isEqualToString:@"launch_at_login"])
-	{
+	} else if( [keyPath isEqualToString:@"launch_at_login"] ) {
 		[self updateLaunchAtLoginFromValue];
 	}
 }
@@ -163,6 +161,11 @@
 		[defaults setBool:YES forKey:@"menubar_icon"];
 		[defaults setBool:YES forKey:@"dock_icon"];
 	}
+}
+
+- (IBAction)showURLShortenerInfo:(id)sender
+{
+	[URLShortenerProtocolInfomationPanel makeKeyAndOrderFront:self];
 }
 
 #pragma mark -
