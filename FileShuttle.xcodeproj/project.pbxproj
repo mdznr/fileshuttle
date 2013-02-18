@@ -46,6 +46,8 @@
 		4CCFAA7B14AA142400D4A0BD /* status_item_mask.png in Resources */ = {isa = PBXBuildFile; fileRef = 4CCFAA7914AA142400D4A0BD /* status_item_mask.png */; };
 		4CFBC71D13F9AADA0043F56A /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4CFBC71C13F9AADA0043F56A /* MainMenu.xib */; };
 		4CFBC72513F9AFE30043F56A /* MVPreferencesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4CFBC72413F9AFE30043F56A /* MVPreferencesController.m */; };
+		C9819D8F16C5FB7700A6DF78 /* MTZColoredBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = C9819D8E16C5FB7700A6DF78 /* MTZColoredBackgroundView.m */; };
+		C9DE793216D2BD9500AFB04A /* RSVerticallyCenteredTextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C9DE793016D2BD9500AFB04A /* RSVerticallyCenteredTextFieldCell.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -126,6 +128,10 @@
 		4CFBC71C13F9AADA0043F56A /* MainMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
 		4CFBC72313F9AFE30043F56A /* MVPreferencesController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MVPreferencesController.h; sourceTree = "<group>"; };
 		4CFBC72413F9AFE30043F56A /* MVPreferencesController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MVPreferencesController.m; sourceTree = "<group>"; };
+		C9819D8D16C5FB7700A6DF78 /* MTZColoredBackgroundView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MTZColoredBackgroundView.h; sourceTree = "<group>"; };
+		C9819D8E16C5FB7700A6DF78 /* MTZColoredBackgroundView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MTZColoredBackgroundView.m; sourceTree = "<group>"; };
+		C9DE792F16D2BD9500AFB04A /* RSVerticallyCenteredTextFieldCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RSVerticallyCenteredTextFieldCell.h; sourceTree = "<group>"; };
+		C9DE793016D2BD9500AFB04A /* RSVerticallyCenteredTextFieldCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RSVerticallyCenteredTextFieldCell.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -273,6 +279,10 @@
 				4C6B0C4A14A9265600E35C50 /* DDHotKeyCenter.m */,
 				4C6B0C5014A927F200E35C50 /* MVDictionaryKeyCombo.h */,
 				4C6B0C5114A927F200E35C50 /* MVDictionaryKeyCombo.m */,
+				C9819D8D16C5FB7700A6DF78 /* MTZColoredBackgroundView.h */,
+				C9819D8E16C5FB7700A6DF78 /* MTZColoredBackgroundView.m */,
+				C9DE792F16D2BD9500AFB04A /* RSVerticallyCenteredTextFieldCell.h */,
+				C9DE793016D2BD9500AFB04A /* RSVerticallyCenteredTextFieldCell.m */,
 			);
 			name = "Other classes";
 			sourceTree = "<group>";
@@ -367,6 +377,8 @@
 				4C6CF82B1497C76D002C1E14 /* sshversion.c in Sources */,
 				4C6B0C4B14A9265600E35C50 /* DDHotKeyCenter.m in Sources */,
 				4C6B0C5214A927F200E35C50 /* MVDictionaryKeyCombo.m in Sources */,
+				C9819D8F16C5FB7700A6DF78 /* MTZColoredBackgroundView.m in Sources */,
+				C9DE793216D2BD9500AFB04A /* RSVerticallyCenteredTextFieldCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -388,7 +400,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
-				CODE_SIGN_IDENTITY = "3rd Party Mac Developer Application";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
@@ -403,7 +414,6 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "";
-				PROVISIONING_PROFILE = "";
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -412,7 +422,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
-				CODE_SIGN_IDENTITY = "3rd Party Mac Developer Application";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_VERSION = "";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
@@ -423,7 +432,6 @@
 				IBC_WARNINGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				OTHER_CFLAGS = "";
-				PROVISIONING_PROFILE = "";
 				SDKROOT = macosx;
 			};
 			name = Release;

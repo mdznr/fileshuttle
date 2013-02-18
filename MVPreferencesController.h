@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 #import <ShortcutRecorder/ShortcutRecorder.h>
+#import "MTZColoredBackgroundView.h"
 
 @interface MVPreferencesController : NSObject <NSTextFieldDelegate> {
 	BOOL showDockIcon_;
@@ -15,8 +16,9 @@
 	NSSecureTextField *passwordTextField_;
 	NSPopUpButton *showInPopUpButton_;
 	SRRecorderControl *clipboardRecorderControl_;
-	IBOutlet NSPanel *URLShortenerProtocolInfomationPanel;
-	IBOutlet NSTextField *URLShortenerProtocolText;
+	IBOutlet NSPanel *URLShortenerProtocolInfomationWindow;
+	IBOutlet MTZColoredBackgroundView *informationWindowBackgroundView;
+	IBOutlet NSTextField *URLShortenerProtocolXMLExpectedOutputTextField;
 }
 
 @property (assign) IBOutlet NSWindow *window;

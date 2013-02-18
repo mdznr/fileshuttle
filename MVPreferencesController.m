@@ -63,7 +63,7 @@
 	EMGenericKeychainItem *keychainItem = [EMGenericKeychainItem
                                          genericKeychainItemForService:@"FileShuttle"
                                          withUsername:@""];
-	if(keychainItem != nil) {
+	if (keychainItem != nil) {
 		password = [keychainItem password];
 	}
 	[self.passwordTextField setStringValue:password];
@@ -77,20 +77,19 @@
              forKeyPath:@"launch_at_login"
                 options:NSKeyValueObservingOptionNew
                 context:nil];
-	self.showDockIcon = ![[[[NSBundle mainBundle] infoDictionary] objectForKey:@"LSUIElement"]
-                        boolValue];
+	self.showDockIcon = ![[[[NSBundle mainBundle] infoDictionary] objectForKey:@"LSUIElement"] boolValue];
 	[self setShowDockIconValue:[defaults boolForKey:@"dock_icon"]];
 	[self updateLaunchAtLoginFromValue];
 	
 	if ( [defaults boolForKey:@"dock_icon"] ) {
-		if([defaults boolForKey:@"menubar_icon"]) {
+		if ( [defaults boolForKey:@"menubar_icon"] ) {
 			[self.showInPopUpButton selectItemWithTag:2];
 		} else {
 			[self.showInPopUpButton selectItemWithTag:1];
 		}
-	}
-	else
+	} else {
 		[self.showInPopUpButton selectItemWithTag:0];
+    }
 	
 	self.clipboardRecorderControl.style = SRGreyStyle;
 	self.clipboardRecorderControl.animates = YES;
@@ -106,7 +105,11 @@
 	self.selectedView = nil;
 	[self layoutView:NO];
 	
-	[URLShortenerProtocolText setStringValue:@"FileShuttle queries {custom shortener}?action=shorten&longUrl={URL to shorten}\nWhere {custom shortener} is the URL of the shortener specified and {URL to shorten} is the full URL of the upload.\nFileShuttle expects XML output like:\n<shttl>\n\t\t<errorCode>0</errorCode>\n\t<errorMessage></errorMessage>\n\t<results>\n\t\t<nodeKeyVal>\n\t\t\t<nodeKey><![CDATA[http://mdznr.com/tmp/Screen Shot 2012-09-02 at 1.43.02 AM-clCN8Pmebr.png]]></nodeKey>\n\t\t\t<shortUrl>http://sht.tl/sVcLE</shortUrl>\n\t\t</nodeKeyVal>\n\t</results>\n\t<statusCode>OK</statusCode>\n</shttl>"];
+	NSColor *backgroundColor;
+	backgroundColor = [NSColor colorWithCalibratedWhite:237.0f/256.0f alpha:1.0f];
+	[informationWindowBackgroundView setBackgroundColor:backgroundColor];
+	
+	[URLShortenerProtocolXMLExpectedOutputTextField setStringValue:@"<shttl>\n\t<errorCode>0</errorCode>\n\t<errorMessage></errorMessage>\n\t<results>\n\t\t<nodeKeyVal>\n\t\t\t<nodeKey>http://example.com/upload.png</nodeKey>\n\t\t\t<shortUrl>http://sht.tl/sVcLE</shortUrl>\n\t\t</nodeKeyVal>\n\t</results>\n\t<statusCode>OK</statusCode>\n</shttl>"];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath
@@ -125,39 +128,45 @@
 #pragma mark -
 #pragma mark IBActions methods
 
-- (IBAction)toolbarItemAction:(id)sender {
-  NSString *selectedIdentifier = self.toolbar.selectedItemIdentifier;
-  if([self.selectedIdentifier isEqualToString:selectedIdentifier])
-    return;
-  self.selectedIdentifier = selectedIdentifier;
-  [self layoutView:YES];
+- (IBAction)toolbarItemAction:(id)sender
+{
+    NSString *selectedIdentifier = self.toolbar.selectedItemIdentifier;
+    if ([self.selectedIdentifier isEqualToString:selectedIdentifier]) {
+        return;
+    }
+    self.selectedIdentifier = selectedIdentifier;
+    [self layoutView:YES];
 }
 
-- (IBAction)protocolChanged:(id)sender {
+- (IBAction)protocolChanged:(id)sender
+{
 	NSString *protocol = [[NSUserDefaults standardUserDefaults] valueForKey:@"protocol"];
 	
 	NSString *port = @"21";
-	if([protocol compare:@"SFTP"] == NSOrderedSame)
+	if ([protocol compare:@"SFTP"] == NSOrderedSame) {
 		port = @"22";
+    }
 	[[NSUserDefaults standardUserDefaults] setValue:port forKey:@"port"];
 }
 
-- (IBAction)passwordChanged:(id)sender {
+- (IBAction)passwordChanged:(id)sender
+{
 	[self savePassword];
 }
 
-- (IBAction)showInPopUpButtonChanged:(id)sender {
+- (IBAction)showInPopUpButtonChanged:(id)sender
+{
 	NSInteger tag = [self.showInPopUpButton selectedTag];
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-	if(tag == 0) {
+	if (tag == 0) {
 		[defaults setBool:YES forKey:@"menubar_icon"];
 		[defaults setBool:NO forKey:@"dock_icon"];
 	}
-	else if(tag == 1) {
+	else if (tag == 1) {
 		[defaults setBool:NO forKey:@"menubar_icon"];
 		[defaults setBool:YES forKey:@"dock_icon"];
 	}
-	else if(tag == 2) {
+	else if (tag == 2) {
 		[defaults setBool:YES forKey:@"menubar_icon"];
 		[defaults setBool:YES forKey:@"dock_icon"];
 	}
@@ -165,7 +174,7 @@
 
 - (IBAction)showURLShortenerInfo:(id)sender
 {
-	[URLShortenerProtocolInfomationPanel makeKeyAndOrderFront:self];
+	[URLShortenerProtocolInfomationWindow makeKeyAndOrderFront:self];
 }
 
 #pragma mark -
@@ -181,11 +190,12 @@
 	NSString *path = [[NSBundle mainBundle] bundlePath];
 	BOOL alreadyLaunch = [self loginItemExistsWithLoginItemReference:loginItems
                                                            ForPath:path];
-	if(launch != alreadyLaunch) {
-		if(launch)
+	if (launch != alreadyLaunch) {
+		if(launch) {
 			[self enableLoginItemWithLoginItemsReference:loginItems ForPath:path];
-		else
+		} else {
 			[self disableLoginItemWithLoginItemsReference:loginItems ForPath:path];
+        }
 	}
 	CFRelease(loginItems);
 }
@@ -195,12 +205,13 @@
 	NSString *password = [self.passwordTextField stringValue];
 	EMGenericKeychainItem *item = [EMGenericKeychainItem genericKeychainItemForService:@"FileShuttle"
                                                                         withUsername:@""];
-	if(item)
+	if (item) {
 		item.password = password;
-	else
+	} else {
 		[EMGenericKeychainItem addGenericKeychainItemForService:@"FileShuttle"
                                                withUsername:@""
                                                    password:password];
+    }
 }
 
 - (void)setShowDockIconValue:(BOOL)show
@@ -250,8 +261,7 @@
   else if([self.selectedIdentifier isEqualToString:kMVAdvancedIdentifier])
     nextView = self.advancedView;
   
-  if(nextView != self.selectedView)
-  {
+  if(nextView != self.selectedView) {
     if(self.selectedView)
       [self.selectedView removeFromSuperview];
     
@@ -336,9 +346,11 @@
 				found = YES;
 				break;
 			}
-      // Docs for LSSharedFileListItemResolve say we're responsible
-      // for releasing the CFURLRef that is returned
-      if (thePath != NULL) CFRelease(thePath);
+            // Docs for LSSharedFileListItemResolve say we're responsible
+            // for releasing the CFURLRef that is returned
+            if (thePath != NULL) {
+                CFRelease(thePath);
+            }
 		}
 	}
 	if (loginItemsArray != NULL) CFRelease(loginItemsArray);
@@ -351,9 +363,10 @@
 
 - (void)controlTextDidChange:(NSNotification *)aNotification
 {
-	if(self.passwordTimer)
+	if (self.passwordTimer) {
 		[self.passwordTimer invalidate];
-	self.passwordTimer = [NSTimer scheduledTimerWithTimeInterval:2 
+    }
+	self.passwordTimer = [NSTimer scheduledTimerWithTimeInterval:2
                                                         target:self 
                                                       selector:@selector(savePassword) 
                                                       userInfo:nil 
