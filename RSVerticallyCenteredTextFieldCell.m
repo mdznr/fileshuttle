@@ -78,6 +78,7 @@
 	mIsEditingOrSelecting = NO;
 }
 
+/*
 - (void)editWithFrame:(NSRect)aRect
 			   inView:(NSView *)controlView
 			   editor:(NSText *)textObj
@@ -95,5 +96,6 @@
 	
 	mIsEditingOrSelecting = NO;
 }
+ */
 
 @end
