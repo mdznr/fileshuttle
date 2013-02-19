@@ -45,6 +45,7 @@
             toolbar                     = toolbar_,
             generalView                 = generalView_,
             advancedView                = advancedView_,
+			advancedViewWithNotificationCenterSupport = advancedViewWithNotificationCenterSupport_,
             showInPopUpButton           = showInPopUpButton_,
             clipboardRecorderControl	= clipboardRecorderControl_,
             selectedIdentifier          = selectedIdentifier_,
@@ -68,13 +69,13 @@
 	
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 	[defaults addObserver:self
-             forKeyPath:@"dock_icon"
-                options:NSKeyValueObservingOptionNew
-                context:nil];
+			   forKeyPath:@"dock_icon"
+				  options:NSKeyValueObservingOptionNew
+				  context:nil];
 	[defaults addObserver:self
-             forKeyPath:@"launch_at_login"
-                options:NSKeyValueObservingOptionNew
-                context:nil];
+			   forKeyPath:@"launch_at_login"
+				  options:NSKeyValueObservingOptionNew
+				  context:nil];
 	self.showDockIcon = ![[[[NSBundle mainBundle] infoDictionary] objectForKey:@"LSUIElement"] boolValue];
 	[self setShowDockIconValue:[defaults boolForKey:@"dock_icon"]];
 	[self updateLaunchAtLoginFromValue];
@@ -207,8 +208,8 @@
 		item.password = password;
 	} else {
 		[EMGenericKeychainItem addGenericKeychainItemForService:@"FileShuttle"
-                                               withUsername:@""
-                                                   password:password];
+												   withUsername:@""
+													   password:password];
     }
 }
 
@@ -253,26 +254,42 @@
 
 - (void)layoutView:(BOOL)animated
 {
-  NSView *nextView = nil;
-  if([self.selectedIdentifier isEqualToString:kMVGeneralIdentifier])
-    nextView = self.generalView;
-  else if([self.selectedIdentifier isEqualToString:kMVAdvancedIdentifier])
-    nextView = self.advancedView;
-  
-  if(nextView != self.selectedView) {
-    if(self.selectedView)
-      [self.selectedView removeFromSuperview];
-    
-    CGRect windowFrame = self.window.frame;
-    windowFrame.size.height = nextView.frame.size.height + kMVTopMargin;
-    windowFrame.origin.y += self.window.frame.size.height - windowFrame.size.height;
-    
-    [self.window setFrame:windowFrame display:YES animate:animated];
-    
-    [self.window.contentView addSubview:nextView];
-    
-    self.selectedView = nextView;
-  }
+	NSView *nextView = nil;
+	if ( [self.selectedIdentifier isEqualToString:kMVGeneralIdentifier] ) {
+		nextView = self.generalView;
+	} else if ( [self.selectedIdentifier isEqualToString:kMVAdvancedIdentifier] ) {
+		
+		NSDictionary *systemVersionDictionary = [NSDictionary dictionaryWithContentsOfFile:@"/System/Library/CoreServices/SystemVersion.plist"];
+		NSString *systemVersion = [systemVersionDictionary objectForKey:@"ProductVersion"];
+		
+		BOOL systemHasNotificationCenterSupport;
+		if ( systemVersion.floatValue >= 10.8f ) {
+			systemHasNotificationCenterSupport = YES;
+		} else {
+			systemHasNotificationCenterSupport = NO;
+		}
+		if ( systemHasNotificationCenterSupport ) {
+			nextView = self.advancedViewWithNotificationCenterSupport;
+		} else {
+			nextView = self.advancedView;
+		}
+	}
+
+	if ( nextView != self.selectedView ) {
+		if ( self.selectedView ) {
+			[self.selectedView removeFromSuperview];
+		}
+
+	CGRect windowFrame = self.window.frame;
+	windowFrame.size.height = nextView.frame.size.height + kMVTopMargin;
+	windowFrame.origin.y += self.window.frame.size.height - windowFrame.size.height;
+
+	[self.window setFrame:windowFrame display:YES animate:animated];
+
+	[self.window.contentView addSubview:nextView];
+
+	self.selectedView = nextView;
+	}
 }
 
 - (void)restartDialogDidEnd:(NSAlert *)alert
@@ -282,11 +299,11 @@
 	// Not quite sure why we can't directly execute outselves, but
 	// we seem to require the open command to make it work
 	[NSTask launchedTaskWithLaunchPath:@"/bin/sh"
-                           arguments:[NSArray arrayWithObjects:@"-c",
-                                      [NSString stringWithFormat:
-                                       @"sleep 1 ; /usr/bin/open '%@'",
-                                       [[NSBundle mainBundle] bundlePath]],
-                                      nil]];
+							 arguments:[NSArray arrayWithObjects:@"-c",
+										[NSString stringWithFormat:
+										 @"sleep 1 ; /usr/bin/open '%@'",
+										 [[NSBundle mainBundle] bundlePath]],
+										nil]];
 	[NSApp terminate:self];
 }
 
@@ -301,8 +318,9 @@
 	LSSharedFileListItemRef item = LSSharedFileListInsertItemURL(theLoginItemsRefs,
                                                                kLSSharedFileListItemLast,
                                                                NULL, NULL, url, NULL, NULL);
-	if (item)
+	if ( item ) {
 		CFRelease(item);
+	}
 }
 
 - (void)disableLoginItemWithLoginItemsReference:(LSSharedFileListRef )theLoginItemsRefs
@@ -313,18 +331,22 @@
 	// We're going to grab the contents of the shared file list (LSSharedFileListItemRef objects)
 	// and pop it in an array so we can iterate through it to find our item.
 	CFArrayRef loginItemsArray = LSSharedFileListCopySnapshot(theLoginItemsRefs, &seedValue);
-	for (id item in (NSArray *)loginItemsArray) {
+	for ( id item in (NSArray *)loginItemsArray ) {
 		LSSharedFileListItemRef itemRef = (LSSharedFileListItemRef)item;
-		if (LSSharedFileListItemResolve(itemRef, 0, (CFURLRef*) &thePath, NULL) == noErr) {
-			if ([[(NSURL *)thePath path] hasPrefix:appPath]) {
+		if ( LSSharedFileListItemResolve(itemRef, 0, (CFURLRef*) &thePath, NULL) == noErr ) {
+			if ( [[(NSURL *)thePath path] hasPrefix:appPath] ) {
 				LSSharedFileListItemRemove(theLoginItemsRefs, itemRef); // Deleting the item
 			}
 			// Docs for LSSharedFileListItemResolve say we're responsible
 			// for releasing the CFURLRef that is returned
-			if (thePath != NULL) CFRelease(thePath);
+			if ( thePath != NULL ) {
+				CFRelease(thePath);
+			}
 		}
 	}
-	if (loginItemsArray != NULL) CFRelease(loginItemsArray);
+	if ( loginItemsArray != NULL ) {
+		CFRelease(loginItemsArray);
+	}
 }
 
 - (BOOL)loginItemExistsWithLoginItemReference:(LSSharedFileListRef)theLoginItemsRefs
@@ -337,21 +359,23 @@
 	// We're going to grab the contents of the shared file list (LSSharedFileListItemRef objects)
 	// and pop it in an array so we can iterate through it to find our item.
 	CFArrayRef loginItemsArray = LSSharedFileListCopySnapshot(theLoginItemsRefs, &seedValue);
-	for (id item in (NSArray *)loginItemsArray) {
+	for ( id item in (NSArray *)loginItemsArray ) {
 		LSSharedFileListItemRef itemRef = (LSSharedFileListItemRef)item;
-		if (LSSharedFileListItemResolve(itemRef, 0, (CFURLRef*) &thePath, NULL) == noErr) {
-			if ([[(NSURL *)thePath path] hasPrefix:appPath]) {
+		if ( LSSharedFileListItemResolve(itemRef, 0, (CFURLRef*) &thePath, NULL) == noErr ) {
+			if ( [[(NSURL *)thePath path] hasPrefix:appPath] ) {
 				found = YES;
 				break;
 			}
             // Docs for LSSharedFileListItemResolve say we're responsible
             // for releasing the CFURLRef that is returned
-            if (thePath != NULL) {
+            if ( thePath != NULL ) {
                 CFRelease(thePath);
             }
 		}
 	}
-	if (loginItemsArray != NULL) CFRelease(loginItemsArray);
+	if ( loginItemsArray != NULL ) {
+		CFRelease(loginItemsArray);
+	}
 	
 	return found;
 }
@@ -361,14 +385,14 @@
 
 - (void)controlTextDidChange:(NSNotification *)aNotification
 {
-	if (self.passwordTimer) {
+	if ( self.passwordTimer ) {
 		[self.passwordTimer invalidate];
     }
 	self.passwordTimer = [NSTimer scheduledTimerWithTimeInterval:2
-                                                        target:self 
-                                                      selector:@selector(savePassword) 
-                                                      userInfo:nil 
-                                                       repeats:NO];
+														  target:self
+														selector:@selector(savePassword)
+														userInfo:nil
+														 repeats:NO];
 }
 
 #pragma mark -
@@ -379,7 +403,7 @@
 {
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 	[defaults setValue:MVDictionaryFromKeyCombo(newKeyCombo)
-              forKey:@"clipboard_upload_shortcut"];
+				forKey:@"clipboard_upload_shortcut"];
 }
 
 @end

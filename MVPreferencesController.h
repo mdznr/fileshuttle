@@ -9,7 +9,8 @@
 #import <ShortcutRecorder/ShortcutRecorder.h>
 #import "MTZColoredBackgroundView.h"
 
-@interface MVPreferencesController : NSObject <NSTextFieldDelegate> {
+@interface MVPreferencesController : NSObject <NSTextFieldDelegate>
+{
 	BOOL showDockIcon_;
 	NSTimer *passwordTimer_;
 	NSWindow *window_;
@@ -25,6 +26,7 @@
 @property (assign) IBOutlet NSToolbar *toolbar;
 @property (assign) IBOutlet NSView *generalView;
 @property (assign) IBOutlet NSView *advancedView;
+@property (assign) IBOutlet NSView *advancedViewWithNotificationCenterSupport;
 @property (assign) IBOutlet NSSecureTextField *passwordTextField;
 @property (assign) IBOutlet NSPopUpButton *showInPopUpButton;
 @property (assign) IBOutlet SRRecorderControl *clipboardRecorderControl;

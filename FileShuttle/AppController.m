@@ -26,16 +26,17 @@
 @property (retain) NSData *originalDockImageData;
 @property (assign) KeyCombo registeredClipboardShortcut;
 @property (assign) BOOL isRegisteredClipboardShortcut;
+@property (assign) BOOL systemHasNotificationCenterSupport;
 
 - (BOOL)areConnectionSettingsFilled;
 - (void)uploadPNG:(NSData*)pngData;
 - (void)uploadString:(NSString*)string;
 - (void)uploadFiles:(NSArray*)filenames;
 - (void)uploadFiles:(NSArray*)filenames
-         deleteFile:(BOOL)deleteFiles;
+		 deleteFile:(BOOL)deleteFiles;
 - (void)setDisplayStatusItem:(BOOL)flag;
 - (void)setRegisterClipboardShortcut:(BOOL)flag
-                            keyCombo:(KeyCombo)keyCombo;
+							keyCombo:(KeyCombo)keyCombo;
 - (void)restoreDockIcon;
 - (void)updateDockIcon;
 - (void)displayCompletedIcons;
@@ -44,22 +45,23 @@
 
 @implementation AppController
 
-@synthesize dockImage                       = dockImage_,
-            screenshotsDirectoryListener    = screenshotsDirectoryListener_,
-            fileUploader                    = fileUploader_,
-            restoreDockIconTimer            = restoreDockIconTimer_,
-            statusItem                      = statusItem_,
-            statusView                      = statusView_,
-            statusMenu                      = statusMenu_,
-            preferencesWindow               = preferencesWindow_,
-            urlShortener                    = urlShortener_,
-            zipFiles                        = zipFiles_,
-            showDockIcon                    = showDockIcon_,
-            lastUploadedFilesMenuItems      = lastUploadedFilesMenuItems_,
-            separatorMenuItem               = separatorMenuItem_,
-            originalDockImageData           = originalDockImageData_,
-            registeredClipboardShortcut     = registeredClipboardShortcut_,
-            isRegisteredClipboardShortcut   = isRegisteredClipboardShortcut_;
+@synthesize dockImage                       	= dockImage_,
+            screenshotsDirectoryListener    	= screenshotsDirectoryListener_,
+            fileUploader                    	= fileUploader_,
+            restoreDockIconTimer            	= restoreDockIconTimer_,
+            statusItem                      	= statusItem_,
+            statusView                      	= statusView_,
+            statusMenu                      	= statusMenu_,
+            preferencesWindow               	= preferencesWindow_,
+            urlShortener                    	= urlShortener_,
+            zipFiles                        	= zipFiles_,
+            showDockIcon                    	= showDockIcon_,
+            lastUploadedFilesMenuItems      	= lastUploadedFilesMenuItems_,
+            separatorMenuItem               	= separatorMenuItem_,
+            originalDockImageData           	= originalDockImageData_,
+            registeredClipboardShortcut     	= registeredClipboardShortcut_,
+            isRegisteredClipboardShortcut  		= isRegisteredClipboardShortcut_,
+			systemHasNotificationCenterSupport	= systemHasNotificationCenterSupport_;
 
 - (void)dealloc
 {
@@ -81,28 +83,54 @@
 
 - (id)init
 {
-  self = [super init];
-  if ( self )
-  {
+	self = [super init];
+	if ( self ) {
 		restoreDockIconTimer_ = nil;
 		
 		NSDictionary *defaultClipboardShortcutDic =
 		MVDictionaryFromKeyCombo(SRMakeKeyCombo(32 /* U */, NSCommandKeyMask | NSAlternateKeyMask));
-#warning the following will depend on OS X version
-		NSDictionary *defaultsPrefs = [NSDictionary dictionaryWithObjectsAndKeys:
-									   @"FTP", @"protocol",
-									   @"21", @"port",
-									   @"YES", @"upload_screenshots",
-									   @"YES", @"url_shortener",
-									   @"http://sht.tl/api.php", @"url_shortener_url",
-									   @"NO", @"dock_icon",
-									   @"YES", @"menubar_icon",
-									   @"NO", @"launch_at_login",
-									   @"NO", @"growl",
-									   @"YES", @"notification_center",
-									   @"YES", @"clipboard_upload",
-									   defaultClipboardShortcutDic, @"clipboard_upload_shortcut",
-									   nil];
+		
+		NSDictionary *systemVersionDictionary = [NSDictionary dictionaryWithContentsOfFile:@"/System/Library/CoreServices/SystemVersion.plist"];
+		NSString *systemVersion = [systemVersionDictionary objectForKey:@"ProductVersion"];
+	  
+		if ( systemVersion.floatValue >= 10.8f ) {
+			systemHasNotificationCenterSupport_ = YES;
+		} else {
+			systemHasNotificationCenterSupport_ = NO;
+		}
+		
+		NSDictionary *defaultsPrefs;
+		if ( systemHasNotificationCenterSupport_ ) {
+			defaultsPrefs = [NSDictionary dictionaryWithObjectsAndKeys:
+							 @"FTP", @"protocol",
+							 @"21", @"port",
+							 @"YES", @"upload_screenshots",
+							 @"YES", @"url_shortener",
+							 @"http://sht.tl/api.php", @"url_shortener_url",
+							 @"NO", @"dock_icon",
+							 @"YES", @"menubar_icon",
+							 @"NO", @"launch_at_login",
+							 @"NO", @"growl",
+							 @"YES", @"notification_center",	// This is different
+							 @"YES", @"clipboard_upload",
+							 defaultClipboardShortcutDic, @"clipboard_upload_shortcut",
+							 nil];
+		} else {
+			defaultsPrefs = [NSDictionary dictionaryWithObjectsAndKeys:
+							 @"FTP", @"protocol",
+							 @"21", @"port",
+							 @"YES", @"upload_screenshots",
+							 @"YES", @"url_shortener",
+							 @"http://sht.tl/api.php", @"url_shortener_url",
+							 @"NO", @"dock_icon",
+							 @"YES", @"menubar_icon",
+							 @"NO", @"launch_at_login",
+							 @"YES", @"growl",
+							 @"YES", @"clipboard_upload",
+							 defaultClipboardShortcutDic, @"clipboard_upload_shortcut",
+							 nil];
+		}
+		
 		NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 		[defaults registerDefaults:defaultsPrefs];
 		
