@@ -8,7 +8,8 @@
 #import <Foundation/Foundation.h>
 #import "MVFileUploadDelegate.h"
 
-@interface MVFileUpload : NSObject {
+@interface MVFileUpload : NSObject
+{
 	NSString *destination_;
 	NSString *username_;
 	NSString *password_;
@@ -23,10 +24,10 @@
 @property (assign) NSObject <MVFileUploadDelegate> *delegate;
 
 - (id)initWithDestination:(NSString *)destination
-                 username:(NSString *)username
-                 password:(NSString *)password
-                   source:(NSURL *)source
-                 delegate:(NSObject <MVFileUploadDelegate> *)delegate;
+				 username:(NSString *)username
+				 password:(NSString *)password
+				   source:(NSURL *)source
+				 delegate:(NSObject <MVFileUploadDelegate> *)delegate;
 - (void)start;
 - (void)cancel;
 

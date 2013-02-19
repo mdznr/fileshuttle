@@ -32,19 +32,18 @@ delegate			= delegate_;
 #pragma mark Public Methods
 
 - (id)initWithDestination:(NSString *)destination
-                 username:(NSString *)username
-                 password:(NSString *)password
-                   source:(NSURL *)source
-                 delegate:(NSObject <MVFileUploadDelegate> *)delegate
+				 username:(NSString *)username
+				 password:(NSString *)password
+				   source:(NSURL *)source
+				 delegate:(NSObject <MVFileUploadDelegate> *)delegate
 {
 	self = [super init];
-	if ( self )
-	{
-		destination_ = [destination retain];
-		username_ = [username retain];
-		password_ = [password retain];
-		source_ = [source retain];
-		delegate_ = delegate;
+	if ( self ) {
+		destination_	= [destination retain];
+		username_		= [username retain];
+		password_		= [password retain];
+		source_			= [source retain];
+		delegate_		= delegate;
 	}
 	return self;
 }

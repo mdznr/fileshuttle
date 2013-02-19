@@ -10,7 +10,8 @@
 #import "MVFileUploadDelegate.h"
 #define kMyBufferSize  32768
 
-@interface MVFTPFileUpload : MVFileUpload {
+@interface MVFTPFileUpload : MVFileUpload
+{
 	CFWriteStreamRef writeStream_;
 	CFReadStreamRef readStream_;
 	long fileSize_;

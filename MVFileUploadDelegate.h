@@ -16,7 +16,7 @@
 - (void)fileUploadDidSuccess:(MVFileUpload*)fileUpload;
 - (void)fileUploadDidStartUpload:(MVFileUpload*)fileUpload;
 - (void)fileUpload:(MVFileUpload*)fileUpload didChangeProgression:(float)progression
-         bytesRead:(long)bytesRead
+		 bytesRead:(long)bytesRead
         totalBytes:(long)totalBytes;
 
 @end

@@ -88,47 +88,48 @@
 		
 		NSDictionary *defaultClipboardShortcutDic =
 		MVDictionaryFromKeyCombo(SRMakeKeyCombo(32 /* U */, NSCommandKeyMask | NSAlternateKeyMask));
+#warning the following will depend on OS X version
 		NSDictionary *defaultsPrefs = [NSDictionary dictionaryWithObjectsAndKeys:
-                                   @"FTP", @"protocol",
-                                   @"21", @"port",
-                                   @"YES", @"upload_screenshots",
-                                   @"YES", @"url_shortener",
-								   @"http://sht.tl/api.php", @"url_shortener_url",
-                                   @"NO", @"dock_icon",
-                                   @"YES", @"menubar_icon",
-                                   @"NO", @"launch_at_login",
-                                   @"YES", @"growl",
-                                   @"YES", @"clipboard_upload",
-                                   defaultClipboardShortcutDic, @"clipboard_upload_shortcut",
-                                   nil];
+									   @"FTP", @"protocol",
+									   @"21", @"port",
+									   @"YES", @"upload_screenshots",
+									   @"YES", @"url_shortener",
+									   @"http://sht.tl/api.php", @"url_shortener_url",
+									   @"NO", @"dock_icon",
+									   @"YES", @"menubar_icon",
+									   @"NO", @"launch_at_login",
+									   @"NO", @"growl",
+									   @"YES", @"notification_center",
+									   @"YES", @"clipboard_upload",
+									   defaultClipboardShortcutDic, @"clipboard_upload_shortcut",
+									   nil];
 		NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 		[defaults registerDefaults:defaultsPrefs];
 		
-		if(![defaults boolForKey:@"dock_icon"] && ![defaults boolForKey:@"menubar_icon"])
-		{
+		if ( ![defaults boolForKey:@"dock_icon"] && ![defaults boolForKey:@"menubar_icon"] ) {
 			[defaults setBool:YES forKey:@"menubar_icon"];
 		}
 		
 		[defaults addObserver:self
-               forKeyPath:@"upload_screenshots"
-                  options:NSKeyValueObservingOptionNew
-                  context:nil];
+				   forKeyPath:@"upload_screenshots"
+					  options:NSKeyValueObservingOptionNew
+					  context:nil];
 		[defaults addObserver:self
-               forKeyPath:@"menubar_icon"
-                  options:NSKeyValueObservingOptionNew
-                  context:nil];
+				   forKeyPath:@"menubar_icon"
+					  options:NSKeyValueObservingOptionNew
+					  context:nil];
 		[defaults addObserver:self
-               forKeyPath:@"dock_icon"
-                  options:NSKeyValueObservingOptionNew
-                  context:nil];
+				   forKeyPath:@"dock_icon"
+					  options:NSKeyValueObservingOptionNew
+					  context:nil];
 		[defaults addObserver:self
-               forKeyPath:@"clipboard_upload"
-                  options:NSKeyValueObservingOptionNew
-                  context:nil];
+				   forKeyPath:@"clipboard_upload"
+					  options:NSKeyValueObservingOptionNew
+					  context:nil];
 		[defaults addObserver:self
-               forKeyPath:@"clipboard_upload_shortcut"
-                  options:NSKeyValueObservingOptionNew
-                  context:nil];
+				   forKeyPath:@"clipboard_upload_shortcut"
+					  options:NSKeyValueObservingOptionNew
+					  context:nil];
 		
 		showDockIcon_ = [defaults boolForKey:@"dock_icon"];
 		
@@ -144,14 +145,14 @@
 		lastUploadedFilesMenuItems_ = [[NSMutableArray alloc] init];
 		
 		// screen capture preferences
-		NSString *scprefspath = [NSHomeDirectory() stringByAppendingPathComponent:
-                             @"Library/Preferences/com.apple.screencapture.plist"];
+		NSString *scprefspath = [NSHomeDirectory() stringByAppendingPathComponent:@"Library/Preferences/com.apple.screencapture.plist"];
 		NSDictionary *scdict = [NSDictionary dictionaryWithContentsOfFile:scprefspath];
 		
 		// path for screen captures
 		NSString *screenshotsPath = [NSHomeDirectory() stringByAppendingPathComponent:@"Desktop"];
-		if (scdict && [scdict objectForKey:@"location"])
+	  if ( scdict && [scdict objectForKey:@"location"] ) {
 			screenshotsPath = [scdict objectForKey:@"location"];
+	  }
     
 		// listener for this directory
 		screenshotsDirectoryListener_ = [[MVDirectoryListener alloc] initWithPath:screenshotsPath];
@@ -160,18 +161,19 @@
 		
 		// file extension
 		NSString *extension = @"png";
-		if (scdict && [scdict objectForKey:@"type"])
+	  if ( scdict && [scdict objectForKey:@"type"] ) {
 			extension = [scdict objectForKey:@"type"];
+	  }
 		[screenshotsDirectoryListener_ setExtension:extension];
 		
 		// status menu
 		statusMenu_ = [[NSMenu alloc] init];
 		[statusMenu_ addItemWithTitle:@"Preferences…"
-                           action:@selector(openPreferences)
-                    keyEquivalent:@""];
+							   action:@selector(openPreferences)
+						keyEquivalent:@""];
 		[statusMenu_ addItemWithTitle:@"Quit"
-                           action:@selector(quit)
-                    keyEquivalent:@""];
+							   action:@selector(quit)
+						keyEquivalent:@""];
 		
 		// status bar item
 		[self setDisplayStatusItem:[defaults boolForKey:@"menubar_icon"]];
@@ -185,11 +187,11 @@
 		// clipboard shortcut
 		isRegisteredClipboardShortcut_ = NO;
 		BOOL clipboardUpload = [defaults boolForKey:@"clipboard_upload"];
-		if(clipboardUpload) {
+		if ( clipboardUpload ) {
 			NSDictionary *clipboardDic = [defaults dictionaryForKey:@"clipboard_upload_shortcut"];
-			if(clipboardDic)
-				[self setRegisterClipboardShortcut:YES
-                                  keyCombo:MVKeyComboFromDictionary(clipboardDic)];
+			if ( clipboardDic ) {
+				[self setRegisterClipboardShortcut:YES keyCombo:MVKeyComboFromDictionary(clipboardDic)];
+			}
 		}
   }
   
@@ -199,35 +201,28 @@
 - (void)awakeFromNib
 {
 	[[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(windowDidUpdate:)
-                                               name:NSWindowDidUpdateNotification
-                                             object:nil];
+											 selector:@selector(windowDidUpdate:)
+												 name:NSWindowDidUpdateNotification
+											   object:nil];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath
-                      ofObject:(id)object
-                        change:(NSDictionary *)change
-                       context:(void *)context
+					  ofObject:(id)object
+						change:(NSDictionary *)change
+					   context:(void *)context
 {
-	if([keyPath isEqualToString:@"upload_screenshots"])
-	{
+	if ( [keyPath isEqualToString:@"upload_screenshots"] ) {
 		NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 		[self.screenshotsDirectoryListener setListening:[defaults boolForKey:@"upload_screenshots"]];
-	}
-	else if([keyPath isEqualToString:@"menubar_icon"])
-	{
+	} else if ( [keyPath isEqualToString:@"menubar_icon"] ) {
 		NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 		[self setDisplayStatusItem:[defaults boolForKey:@"menubar_icon"]];
-	}
-	else if([keyPath isEqualToString:@"dock_icon"])
-	{
+	} else if( [keyPath isEqualToString:@"dock_icon"] ) {
 		NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 		self.showDockIcon = [defaults boolForKey:@"dock_icon"];
 		[self restoreDockIcon];
-	}
-	else if([keyPath isEqualToString:@"clipboard_upload"]
-					|| [keyPath isEqualToString:@"clipboard_upload_shortcut"])
-	{
+	} else if ( [keyPath isEqualToString:@"clipboard_upload"] ||
+			    [keyPath isEqualToString:@"clipboard_upload_shortcut"]) {
 		NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 		NSDictionary *dic = [defaults dictionaryForKey:@"clipboard_upload_shortcut"];
 		[self setRegisterClipboardShortcut:[defaults boolForKey:@"clipboard_upload"]
@@ -240,22 +235,23 @@
 	[NSApp setServicesProvider:self];
 	[self updateDockIcon];
 	
-	if(![self areConnectionSettingsFilled])
+	if ( ![self areConnectionSettingsFilled] ) {
 		[self.preferencesWindow makeKeyAndOrderFront:self];
+	}
 }
 
 - (void)application:(NSApplication *)sender
-          openFiles:(NSArray *)filenames
+		  openFiles:(NSArray *)filenames
 {
 	[self uploadFiles:filenames];
 }
 
 - (void)doString:(NSPasteboard *)pboard
-        userData:(NSString *)userData
-           error:(NSString **)error
+		userData:(NSString *)userData
+		   error:(NSString **)error
 {
 	NSArray *types = [pboard types];
-	if([types containsObject:NSStringPboardType]) {
+	if ( [types containsObject:NSStringPboardType] ) {
 		NSString *pboardString = [pboard stringForType:NSStringPboardType];
 		[self uploadString:pboardString];
 	}
@@ -285,10 +281,11 @@
 	NSString *protocol = [defaults stringForKey:@"protocol"];
 	NSString *hostname = [defaults stringForKey:@"host"];
 	NSString *username = [defaults stringForKey:@"username"];
-	NSString *baseurl = [defaults stringForKey:@"baseurl"];
+	NSString *baseurl  = [defaults stringForKey:@"baseurl"];
 	
-	return !(!protocol || [protocol length] == 0 || !hostname || [hostname length] == 0
-           || !username || [username length] == 0 || !baseurl || [baseurl length] == 0);
+	return !(!protocol || [protocol length] == 0 || !hostname ||
+			 [hostname length] == 0 || !username || [username length] == 0 ||
+			 !baseurl || [baseurl length] == 0);
 }
 
 - (void)uploadPNG:(NSData*)pngData
@@ -296,7 +293,7 @@
 	NSString *path = @"/tmp/image.png";
 	[pngData writeToFile:path atomically:YES];
 	[self uploadFiles:[NSArray arrayWithObject:path]
-         deleteFile:YES];
+		   deleteFile:YES];
 }
 
 - (void)uploadString:(NSString*)string
@@ -304,21 +301,19 @@
 	NSString *path = @"/tmp/snippet.txt";
 	[string writeToFile:path atomically:NO encoding:NSUTF8StringEncoding error:nil];
 	[self uploadFiles:[NSArray arrayWithObject:path]
-         deleteFile:YES];
+		   deleteFile:YES];
 }
 
 - (void)uploadFiles:(NSArray*)filenames
 {
 	[self uploadFiles:filenames
-         deleteFile:NO];
+		   deleteFile:NO];
 }
 
-- (void)uploadFiles:(NSArray*)filenames
-         deleteFile:(BOOL)deleteFile
+- (void)uploadFiles:(NSArray*)filenames deleteFile:(BOOL)deleteFile
 {
-	if(![self areConnectionSettingsFilled])
-	{
-		if([[NSUserDefaults standardUserDefaults] boolForKey:@"growl"])
+	if ( ![self areConnectionSettingsFilled] ) {
+		if ( [[NSUserDefaults standardUserDefaults] boolForKey:@"growl"] ) {
 			[GrowlApplicationBridge notifyWithTitle:@"Upload failed"
                                   description:@"Please check your connection configuration"
                              notificationName:@"Bad configuration"
@@ -326,35 +321,46 @@
                                      priority:0
                                      isSticky:FALSE
                                  clickContext:nil];
+		} else if ( [[NSUserDefaults standardUserDefaults] boolForKey:@"notification_center"] ) {
+			NSUserNotification *notification = [[NSUserNotification alloc] init];
+			[notification setTitle:@"Upload failed"];
+			[notification setSubtitle:@"Bad configuration"];
+			[notification setInformativeText:@"Please check your connection configuration"];
+			[notification setHasActionButton:NO];
+#warning set Action Button to open FileShuttle preferences
+			[[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
+		}
+		
 		return;
 	}
 	
 	BOOL shouldZip = ([filenames count] > 1);
-	if(!shouldZip && [filenames count] == 1) {
+	if ( !shouldZip && [filenames count] == 1 ) {
 		BOOL isDirectory;
 		[[NSFileManager defaultManager] fileExistsAtPath:[filenames objectAtIndex:0]
-                                         isDirectory:&isDirectory];
+											 isDirectory:&isDirectory];
 		shouldZip = isDirectory;
 	}
 	
 	NSString *file = nil;
-	if(shouldZip) {
+	if ( shouldZip ) {
 		file = [self.zipFiles zipFiles:filenames];
 		deleteFile = YES;
 	}
-	else if([filenames count] == 1) {
+	else if ( [filenames count] == 1 ) {
 		file = [filenames objectAtIndex:0];
 	}
 	
 	NSMutableString *randStr = [NSMutableString string];
-	for(int i = 0; i < 10; i++) {
+	for ( int i = 0; i < 10; i++ ) {
 		int r = arc4random() % 62;
-		if(r <= 9)
+		if ( r <= 9 ) {
 			[randStr appendFormat:@"%i",r];
-		else if(r <= 35)
+		} else if ( r <= 35 ) {
 			[randStr appendFormat:@"%c",(r - 10) + 65];
-		else
+		} else {
 			[randStr appendFormat:@"%c",(r - 36) + 97];
+		}
 	}
 	
 	NSString *filename;
@@ -362,40 +368,40 @@
 	filename = [filename stringByAppendingFormat:@"-%@",randStr];
 	filename = [filename stringByAppendingPathExtension:[file pathExtension]];
 	
-	if(file)
+	if ( file ) {
 		[self.fileUploader uploadFile:file
-                       toFilename:filename
-                       deleteFile:deleteFile];
+						   toFilename:filename
+						   deleteFile:deleteFile];
+	}
 }
 
 - (void)setDisplayStatusItem:(BOOL)flag
 {
-	if(flag) {
-		if(!self.statusItem) {
-			self.statusItem = [[NSStatusBar systemStatusBar]
-                         statusItemWithLength:NSVariableStatusItemLength];
+	if ( flag ) {
+		if ( !self.statusItem ) {
+			self.statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength:NSVariableStatusItemLength];
 			self.statusItem.menu = self.statusMenu;
 			self.statusItem.highlightMode = YES;
 			
-			self.statusView = [[[MVStatusItemView alloc] initWithFrame:NSMakeRect(0, 0, 26, 24)]
-                         autorelease];
+			self.statusView = [[[MVStatusItemView alloc] initWithFrame:NSMakeRect(0, 0, 26, 24)] autorelease];
 			self.statusView.statusItem = self.statusItem;
 			self.statusView.menu = self.statusMenu;
 			self.statusView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
-			self.statusView.image = [NSImage imageNamed:@"status_item"];
-			self.statusView.alternateImage = [NSImage imageNamed:@"status_item_highlighted"];
-			self.statusView.errorImage = [NSImage imageNamed:@"status_item_error"];
-			self.statusView.completedImage = [NSImage imageNamed:@"status_item_completed"];
-			self.statusView.maskImage = [NSImage imageNamed:@"status_item_mask"];
-			self.statusView.emptyImage = [NSImage imageNamed:@"status_item_empty"];
-			self.statusView.delegate = self;
+			self.statusView.image 			= [NSImage imageNamed:@"status_item"];
+			self.statusView.alternateImage	= [NSImage imageNamed:@"status_item_highlighted"];
+			self.statusView.errorImage		= [NSImage imageNamed:@"status_item_error"];
+			self.statusView.completedImage	= [NSImage imageNamed:@"status_item_completed"];
+			self.statusView.maskImage		= [NSImage imageNamed:@"status_item_mask"];
+			self.statusView.emptyImage		= [NSImage imageNamed:@"status_item_empty"];
+			self.statusView.delegate		= self;
 			
 			self.statusItem.view = self.statusView;
 		}
 	}
 	else {
-		if(self.statusItem)
+		if ( self.statusItem ) {
 			[[NSStatusBar systemStatusBar] removeStatusItem:self.statusItem];
+		}
 		self.statusItem = nil;
 		self.statusView = nil;
 	}
@@ -406,20 +412,20 @@
 {
 	DDHotKeyCenter * hotKeyCenter = [[DDHotKeyCenter alloc] init];
 	
-	if(self.isRegisteredClipboardShortcut) {
+	if ( self.isRegisteredClipboardShortcut ) {
 		[hotKeyCenter unregisterHotKeyWithKeyCode:self.registeredClipboardShortcut.code
-                                modifierFlags:self.registeredClipboardShortcut.flags];
+									modifierFlags:self.registeredClipboardShortcut.flags];
 	}
 	self.isRegisteredClipboardShortcut = NO;
 	
-	if(flag) {
-		if (![hotKeyCenter registerHotKeyWithKeyCode:keyCombo.code
-                                   modifierFlags:keyCombo.flags
-                                          target:self
-                                          action:@selector(uploadClipboardFromShortcut:)
-                                          object:nil])
+	if ( flag ) {
+		if ( ![hotKeyCenter registerHotKeyWithKeyCode:keyCombo.code
+										modifierFlags:keyCombo.flags
+											   target:self
+											   action:@selector(uploadClipboardFromShortcut:)
+											   object:nil]) {
 			NSLog(@"Failed to register clipboard shortcut");
-		else {
+		} else {
 			self.registeredClipboardShortcut = keyCombo;
 			self.isRegisteredClipboardShortcut = YES;
 		}
@@ -431,16 +437,11 @@
 {
 	NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
 	NSArray *types = [pasteboard types];
-	if([types containsObject:NSFilenamesPboardType])
-	{
+	if ( [types containsObject:NSFilenamesPboardType] ) {
 		[self uploadFiles:[pasteboard filesRepresentation]];
-	}
-	else if([types containsObject:NSPasteboardTypePNG])
-	{
+	} else if ( [types containsObject:NSPasteboardTypePNG] ) {
 		[self uploadPNG:[pasteboard dataForType:NSPasteboardTypePNG]];
-	}
-	else if([types containsObject:NSStringPboardType])
-	{
+	} else if( [types containsObject:NSStringPboardType] ) {
 		[self uploadString:[pasteboard stringForType:NSStringPboardType]];
 	}
 }
@@ -450,7 +451,7 @@
 	self.statusView.state = MVStatusItemStateNormal;
 	self.statusView.progression = 0;
 	
-	if(self.showDockIcon) {
+	if ( self.showDockIcon ) {
 		self.dockImage.state = MVDockImageStateNormal;
 		self.dockImage.progression = 0;
 		[self updateDockIcon];
@@ -468,19 +469,20 @@
 {
 	self.statusView.state = MVStatusItemStateComplete;
 	
-	if(self.showDockIcon) {
+	if ( self.showDockIcon ) {
 		self.dockImage.progression = 1;
 		self.dockImage.state = MVDockImageStateComplete;
 		[self updateDockIcon];
 	}
 	
-	if(self.restoreDockIconTimer)
+	if ( self.restoreDockIconTimer ) {
 		[self.restoreDockIconTimer invalidate];
+	}
 	self.restoreDockIconTimer = [NSTimer scheduledTimerWithTimeInterval:1.5
-                                                               target:self
-                                                             selector:@selector(restoreDockIcon)
-                                                             userInfo:nil
-                                                              repeats:NO];
+																 target:self
+															   selector:@selector(restoreDockIcon)
+															   userInfo:nil
+																repeats:NO];
 }
 
 - (void)copyURLFromMenuItem:(NSMenuItem*)menuItem
@@ -492,14 +494,22 @@
 	
 	
 	
-	if([[NSUserDefaults standardUserDefaults] boolForKey:@"growl"])
+	if ( [[NSUserDefaults standardUserDefaults] boolForKey:@"growl"] ) {
 		[GrowlApplicationBridge notifyWithTitle:@"Paste it!"
-                                description:@"The URL has been written into your pasteboard"
-                           notificationName:@"URL copied"
-                                   iconData:self.originalDockImageData
-                                   priority:0
-                                   isSticky:FALSE
-                               clickContext:nil];
+									description:@"The URL has been written into your pasteboard"
+							   notificationName:@"URL copied"
+									   iconData:self.originalDockImageData
+									   priority:0
+									   isSticky:FALSE
+								   clickContext:nil];
+	} else if ( [[NSUserDefaults standardUserDefaults] boolForKey:@"notification_center"] ) {
+		NSUserNotification *notification = [[NSUserNotification alloc] init];
+		[notification setTitle:@"Paste it!"];
+		[notification setSubtitle:@"URL copied"];
+		[notification setInformativeText:@"The URL has been written into your pasteboard"];
+		[notification setHasActionButton:NO];
+		[[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
+	}
 	
 	[self displayCompletedIcons];
 }
@@ -509,15 +519,16 @@
 
 - (void)windowDidUpdate:(NSNotification*)notification
 {
-	if(self.statusItem && self.statusItem.view.window)
+	if ( self.statusItem && self.statusItem.view.window ) {
 		[self.statusItem.view.window makeKeyAndOrderFront:self];
+	}
 }
 
 #pragma mark -
 #pragma mark DirectoryListenerDelegate methods
 
 - (void)directoryListener:(MVDirectoryListener *)aDirectoryListener
-                  newFile:(NSString *)filename
+				  newFile:(NSString *)filename
 {
 	NSString *filepath = [[aDirectoryListener path] stringByAppendingPathComponent:filename];
 	[self uploadFiles:[NSArray arrayWithObject:filepath]];
@@ -530,21 +541,22 @@
     didFailWithError:(NSString *)error
 {
 	self.statusView.state = MVStatusItemStateError;
-	if(self.showDockIcon) {
+	if ( self.showDockIcon ) {
 		self.dockImage.state = MVDockImageStateError;
 		self.dockImage.progression = 1.0;
 		[self updateDockIcon];
 	}
   
 	
-	if(self.restoreDockIconTimer)
+	if ( self.restoreDockIconTimer ) {
 		[self.restoreDockIconTimer invalidate];
+	}
 	self.restoreDockIconTimer = [NSTimer scheduledTimerWithTimeInterval:1.5
                                                                target:self
                                                              selector:@selector(restoreDockIcon)
                                                              userInfo:nil
                                                               repeats:NO];
-	if([[NSUserDefaults standardUserDefaults] boolForKey:@"growl"])
+	if ( [[NSUserDefaults standardUserDefaults] boolForKey:@"growl"] ) {
 		[GrowlApplicationBridge notifyWithTitle:@"Upload failed"
                                 description:@"Please check your connection configuration and internet connection."
                            notificationName:@"Bad configuration"
@@ -552,6 +564,15 @@
                                    priority:0
                                    isSticky:FALSE
                                clickContext:nil];
+	} else if ( [[NSUserDefaults standardUserDefaults] boolForKey:@"notification_center"] ) {
+		NSUserNotification *notification = [[NSUserNotification alloc] init];
+		[notification setTitle:@"Upload failed"];
+		[notification setSubtitle:@"Bad configuration"];
+		[notification setInformativeText:@"Please check your connection configuration and internet connection."];
+		[notification setHasActionButton:NO];
+#warning set Action Button to open FileShuttle preferences
+		[[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
+	}
 }
 
 - (void)fileUploaderDidStart:(MVFileUploader*)fileUploader
@@ -559,9 +580,11 @@
 	self.statusView.state = MVStatusItemStateUploading;
 	self.statusView.progression = 0;
 	
-	if(self.restoreDockIconTimer)
+	if ( self.restoreDockIconTimer ) {
 		[self.restoreDockIconTimer invalidate];
-	if(self.showDockIcon) {
+	}
+	
+	if ( self.showDockIcon ) {
 		self.dockImage.state = MVDockImageStateUploading;
 		[self updateDockIcon];
 	}
@@ -573,7 +596,7 @@ didChangeProgression:(float)progression
 	self.statusView.state = MVStatusItemStateUploading;
 	self.statusView.progression = progression;
 	
-	if(self.showDockIcon) {
+	if ( self.showDockIcon ) {
 		if(fabs(self.dockImage.progression - progression) > 0.01) {
 			self.dockImage.state = MVDockImageStateUploading;
 			self.dockImage.progression = progression;
@@ -583,15 +606,16 @@ didChangeProgression:(float)progression
 }
 
 - (void)fileUploader:(MVFileUploader*)fileUploader
-          didSuccess:(NSString*)url
-            fileName:(NSString*)filename
-            filePath:(NSString*)filepath
+		  didSuccess:(NSString*)url
+			fileName:(NSString*)filename
+			filePath:(NSString*)filepath
 {
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-	if([defaults boolForKey:@"url_shortener"]) {
+	if ( [defaults boolForKey:@"url_shortener"] ) {
 		NSString *tmpUrl = [self.urlShortener shortenURL:url];
-		if(tmpUrl)
+		if ( tmpUrl ) {
 			url = tmpUrl;
+		}
 	}
 	
 	NSString *type = NSStringPboardType;
@@ -606,26 +630,34 @@ didChangeProgression:(float)progression
                                         atIndex:0];
 	[menuItem release];
 	
-	if(self.separatorMenuItem.menu != self.statusMenu)
-		[self.statusMenu insertItem:self.separatorMenuItem 
+	if ( self.separatorMenuItem.menu != self.statusMenu ) {
+		[self.statusMenu insertItem:self.separatorMenuItem
                         atIndex:0];
+	}
 	[self.statusMenu insertItem:menuItem atIndex:0];
-	while([self.lastUploadedFilesMenuItems count] > 5) {
+	while ( [self.lastUploadedFilesMenuItems count] > 5 ) {
 		menuItem = [self.lastUploadedFilesMenuItems lastObject];
 		[self.statusMenu removeItem:menuItem];
 		[self.lastUploadedFilesMenuItems removeObjectAtIndex:
-     [self.lastUploadedFilesMenuItems count] - 1];
+		[self.lastUploadedFilesMenuItems count] - 1];
 	}
 	
 	self.dockImage.state = MVDockImageStateNormal;
-	if([[NSUserDefaults standardUserDefaults] boolForKey:@"growl"])
+	if ( [[NSUserDefaults standardUserDefaults] boolForKey:@"growl"] ) {
 		[GrowlApplicationBridge notifyWithTitle:@"File uploaded"
-                                description:@"The URL has been written into your pasteboard"
-                           notificationName:@"File uploaded"
-                                   iconData:self.originalDockImageData
-                                   priority:0
-                                   isSticky:FALSE
-                               clickContext:nil];
+									description:@"The URL has been written into your pasteboard"
+							   notificationName:@"File uploaded"
+									   iconData:self.originalDockImageData
+									   priority:0
+									   isSticky:FALSE
+								   clickContext:nil];
+	} else if ( [[NSUserDefaults standardUserDefaults] boolForKey:@"notification_center"] ) {
+		NSUserNotification *notification = [[NSUserNotification alloc] init];
+		[notification setTitle:@"File uploaded"];
+		[notification setInformativeText:@"The URL has been written into your pasteboard"];
+		[notification setHasActionButton:NO];
+		[[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
+	}
   
 	[self displayCompletedIcons];
 }
@@ -633,8 +665,8 @@ didChangeProgression:(float)progression
 #pragma mark -
 #pragma mark MVStatusItemViewDelegate Methods
 
-- (void)statusItemView:(MVStatusItemView *)view 
-          didDropFiles:(NSArray *)filenames
+- (void)statusItemView:(MVStatusItemView *)view
+		  didDropFiles:(NSArray *)filenames
 {
 	[self uploadFiles:filenames];
 }

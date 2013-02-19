@@ -46,7 +46,7 @@
             generalView                 = generalView_,
             advancedView                = advancedView_,
             showInPopUpButton           = showInPopUpButton_,
-            clipboardRecorderControl		= clipboardRecorderControl_,
+            clipboardRecorderControl	= clipboardRecorderControl_,
             selectedIdentifier          = selectedIdentifier_,
             selectedView                = selectedView_,
             showDockIcon                = showDockIcon_,
@@ -55,15 +55,13 @@
 - (void)awakeFromNib
 {
 	[[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(controlTextDidChange:)
-                                               name:NSControlTextDidChangeNotification
-                                             object:self.passwordTextField];
+											 selector:@selector(controlTextDidChange:)
+												 name:NSControlTextDidChangeNotification
+											   object:self.passwordTextField];
 	
 	NSString *password = @"";
-	EMGenericKeychainItem *keychainItem = [EMGenericKeychainItem
-                                         genericKeychainItemForService:@"FileShuttle"
-                                         withUsername:@""];
-	if (keychainItem != nil) {
+	EMGenericKeychainItem *keychainItem = [EMGenericKeychainItem genericKeychainItemForService:@"FileShuttle" withUsername:@""];
+	if ( keychainItem != nil ) {
 		password = [keychainItem password];
 	}
 	[self.passwordTextField setStringValue:password];
