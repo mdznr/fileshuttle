@@ -111,7 +111,7 @@
 							 @"YES", @"menubar_icon",
 							 @"NO", @"launch_at_login",
 							 @"NO", @"growl",
-							 @"YES", @"notification_center",	// This is different
+							 @"YES", @"notification_center",
 							 @"YES", @"clipboard_upload",
 							 defaultClipboardShortcutDic, @"clipboard_upload_shortcut",
 							 nil];
@@ -126,6 +126,7 @@
 							 @"YES", @"menubar_icon",
 							 @"NO", @"launch_at_login",
 							 @"YES", @"growl",
+							 @"NO", @"notification_center",
 							 @"YES", @"clipboard_upload",
 							 defaultClipboardShortcutDic, @"clipboard_upload_shortcut",
 							 nil];
