@@ -100,36 +100,22 @@
 		}
 		
 		NSDictionary *defaultsPrefs;
+		defaultsPrefs = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+						 @"FTP", @"protocol",
+						 @"21", @"port",
+						 @"YES", @"upload_screenshots",
+						 @"YES", @"url_shortener",
+						 @"http://sht.tl/api.php", @"url_shortener_url",
+						 @"NO", @"dock_icon",
+						 @"YES", @"menubar_icon",
+						 @"NO", @"launch_at_login",
+						 @"YES", @"growl",
+						 @"YES", @"clipboard_upload",
+						 defaultClipboardShortcutDic, @"clipboard_upload_shortcut",
+						 nil];
+		
 		if ( systemHasNotificationCenterSupport_ ) {
-			defaultsPrefs = [NSDictionary dictionaryWithObjectsAndKeys:
-							 @"FTP", @"protocol",
-							 @"21", @"port",
-							 @"YES", @"upload_screenshots",
-							 @"YES", @"url_shortener",
-							 @"http://sht.tl/api.php", @"url_shortener_url",
-							 @"NO", @"dock_icon",
-							 @"YES", @"menubar_icon",
-							 @"NO", @"launch_at_login",
-							 @"NO", @"growl",
-							 @"YES", @"notification_center",
-							 @"YES", @"clipboard_upload",
-							 defaultClipboardShortcutDic, @"clipboard_upload_shortcut",
-							 nil];
-		} else {
-			defaultsPrefs = [NSDictionary dictionaryWithObjectsAndKeys:
-							 @"FTP", @"protocol",
-							 @"21", @"port",
-							 @"YES", @"upload_screenshots",
-							 @"YES", @"url_shortener",
-							 @"http://sht.tl/api.php", @"url_shortener_url",
-							 @"NO", @"dock_icon",
-							 @"YES", @"menubar_icon",
-							 @"NO", @"launch_at_login",
-							 @"YES", @"growl",
-							 @"NO", @"notification_center",
-							 @"YES", @"clipboard_upload",
-							 defaultClipboardShortcutDic, @"clipboard_upload_shortcut",
-							 nil];
+			[defaultsPrefs setValue:@"NO" forKey:@"growl"];
 		}
 		
 		NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -342,15 +328,15 @@
 - (void)uploadFiles:(NSArray*)filenames deleteFile:(BOOL)deleteFile
 {
 	if ( ![self areConnectionSettingsFilled] ) {
-		if ( [[NSUserDefaults standardUserDefaults] boolForKey:@"growl"] ) {
+		if ( !systemHasNotificationCenterSupport_ && [[NSUserDefaults standardUserDefaults] boolForKey:@"growl"] ) {
 			[GrowlApplicationBridge notifyWithTitle:@"Upload failed"
-                                  description:@"Please check your connection configuration"
-                             notificationName:@"Bad configuration"
-                                     iconData:self.originalDockImageData
-                                     priority:0
-                                     isSticky:FALSE
-                                 clickContext:nil];
-		} else if ( [[NSUserDefaults standardUserDefaults] boolForKey:@"notification_center"] ) {
+										description:@"Please check your connection configuration"
+								   notificationName:@"Bad configuration"
+										   iconData:self.originalDockImageData
+										   priority:0
+										   isSticky:FALSE
+									   clickContext:nil];
+		} else if ( systemHasNotificationCenterSupport_ ) {
 			NSUserNotification *notification = [[NSUserNotification alloc] init];
 			[notification setTitle:@"Upload failed"];
 			[notification setSubtitle:@"Bad configuration"];
@@ -521,9 +507,7 @@
 	[[NSPasteboard generalPasteboard] declareTypes:[NSArray arrayWithObject:type] owner:nil];
 	[[NSPasteboard generalPasteboard] setString:url forType:type];
 	
-	
-	
-	if ( [[NSUserDefaults standardUserDefaults] boolForKey:@"growl"] ) {
+	if ( !systemHasNotificationCenterSupport_ && [[NSUserDefaults standardUserDefaults] boolForKey:@"growl"] ) {
 		[GrowlApplicationBridge notifyWithTitle:@"Paste it!"
 									description:@"The URL has been written into your pasteboard"
 							   notificationName:@"URL copied"
@@ -531,7 +515,7 @@
 									   priority:0
 									   isSticky:FALSE
 								   clickContext:nil];
-	} else if ( [[NSUserDefaults standardUserDefaults] boolForKey:@"notification_center"] ) {
+	} else if ( systemHasNotificationCenterSupport_ ) {
 		NSUserNotification *notification = [[NSUserNotification alloc] init];
 		[notification setTitle:@"Paste it!"];
 		[notification setSubtitle:@"URL copied"];
@@ -585,7 +569,7 @@
                                                              selector:@selector(restoreDockIcon)
                                                              userInfo:nil
                                                               repeats:NO];
-	if ( [[NSUserDefaults standardUserDefaults] boolForKey:@"growl"] ) {
+	if ( !systemHasNotificationCenterSupport_ && [[NSUserDefaults standardUserDefaults] boolForKey:@"growl"] ) {
 		[GrowlApplicationBridge notifyWithTitle:@"Upload failed"
                                 description:@"Please check your connection configuration and internet connection."
                            notificationName:@"Bad configuration"
@@ -593,7 +577,7 @@
                                    priority:0
                                    isSticky:FALSE
                                clickContext:nil];
-	} else if ( [[NSUserDefaults standardUserDefaults] boolForKey:@"notification_center"] ) {
+	} else if ( systemHasNotificationCenterSupport_ ) {
 		NSUserNotification *notification = [[NSUserNotification alloc] init];
 		[notification setTitle:@"Upload failed"];
 		[notification setSubtitle:@"Bad configuration"];
@@ -672,7 +656,8 @@ didChangeProgression:(float)progression
 	}
 	
 	self.dockImage.state = MVDockImageStateNormal;
-	if ( [[NSUserDefaults standardUserDefaults] boolForKey:@"growl"] ) {
+	
+	if ( !systemHasNotificationCenterSupport_ && [[NSUserDefaults standardUserDefaults] boolForKey:@"growl"] ) {
 		[GrowlApplicationBridge notifyWithTitle:@"File uploaded"
 									description:@"The URL has been written into your pasteboard"
 							   notificationName:@"File uploaded"
@@ -680,7 +665,7 @@ didChangeProgression:(float)progression
 									   priority:0
 									   isSticky:FALSE
 								   clickContext:nil];
-	} else if ( [[NSUserDefaults standardUserDefaults] boolForKey:@"notification_center"] ) {
+	} else if ( systemHasNotificationCenterSupport_ ) {
 		NSUserNotification *notification = [[NSUserNotification alloc] init];
 		[notification setTitle:@"File uploaded"];
 		[notification setInformativeText:@"The URL has been written into your pasteboard"];

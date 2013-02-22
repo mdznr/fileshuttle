@@ -18,7 +18,7 @@ extern int const MVDockImageStateError;
 @private
 	int state;
 	float progression;
-  NSImage *appIcon;
+	NSImage *appIcon;
 }
 
 @property (assign, nonatomic) int state;

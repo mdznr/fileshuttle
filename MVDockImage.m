@@ -23,39 +23,43 @@ int const MVDockImageStateError = 3;
 
 - (id)init
 {
-  self = [super initWithSize:NSMakeSize(512, 512)];
-  if (self) {
+	self = [super initWithSize:NSMakeSize(512, 512)];
+	if ( self ) {
 		appIcon = [NSImage imageNamed:@"fileshuttle.icns"];
 		progression = 0;
 		state = MVDockImageStateNormal;
 		[self display];
-  }
-  
-  return self;
+	}
+	return self;
 }
 
 - (void)dealloc
 {
-  [super dealloc];
+	[super dealloc];
 }
 
-- (void)setState:(int)aState {
-	if(state == aState)
+- (void)setState:(int)aState
+{
+	if ( state == aState ) {
 		return;
+	}
 	state = aState;
 	[self display];
 }
 
-- (void)setProgression:(float)aProgression {
-	if(progression == aProgression)
+- (void)setProgression:(float)aProgression
+{
+	if ( progression == aProgression ) {
 		return;
+	}
 	progression = aProgression;
 	[self display];
 }
 
 #pragma mark Private methods
 
-- (void)display {
+- (void)display
+{
 	[self lockFocus];
 	
 	[[NSColor clearColor] set];
@@ -64,12 +68,12 @@ int const MVDockImageStateError = 3;
 	NSRectFill(bounds);
 	
 	NSImageRep *representation = [appIcon bestRepresentationForRect:bounds
-                                                          context:[NSGraphicsContext currentContext]
-                                                            hints:nil];
+															context:[NSGraphicsContext currentContext]
+															  hints:nil];
   
 	[appIcon drawRepresentation:representation inRect:bounds];
 	
-	if(progression >= 0 && state != MVDockImageStateNormal) {
+	if ( progression >= 0 && state != MVDockImageStateNormal ) {
 		CGFloat top = 50.0;
 		CGFloat height = 60.0;
 		CGFloat margin = 20.0;
@@ -90,12 +94,13 @@ int const MVDockImageStateError = 3;
                                     cornerRadius:radius];
 		[progressBar closePath];
 		
-		if(state == MVDockImageStateUploading)
+		if ( state == MVDockImageStateUploading ) {
 			[[NSColor whiteColor] set];
-		else if(state == MVDockImageStateComplete)
+		} else if ( state == MVDockImageStateComplete ) {
 			[[NSColor colorWithCalibratedRed:197.0/255.0 green:255.0/255.0 blue:72.0/255.0 alpha:1.0] set];
-		else if(state == MVDockImageStateError)
+		} else if ( state == MVDockImageStateError ) {
 			[[NSColor redColor] set];
+		}
 		
 		[progressBar fill];
 	}
